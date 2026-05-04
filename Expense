@@ -1,0 +1,621 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>💀 SYSTEM EXPENSE TRACKER PRO 📊</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        * { box-sizing: border-box; }
+        body { 
+            font-family: 'Courier New', Courier, monospace; 
+            padding: 5px; 
+            margin: 0; 
+            background: #000000; 
+            color: #00ff41;
+        }
+        .container { 
+            max-width: 100%; 
+            margin: auto; 
+            background: #0a0a0a; 
+            padding: 10px; 
+            border-radius: 5px; 
+            box-shadow: 0 0 15px #00ff41, 0 0 30px rgba(0,255,65,0.5);
+            border: 2px solid #00ff41;
+        }
+        h1 { 
+            text-align: center; 
+            color: #ff003c; 
+            margin: 5px 0; 
+            font-size: 20px;
+            font-weight: bold;
+            text-shadow: 0 0 10px #ff003c;
+        }
+        h2 { font-size: 16px; margin: 8px 0; color: #00ff41; }
+        h3 { font-size: 14px; margin: 5px 0; color: #00ff41; }
+        
+        /* --- HEADER STYLE --- */
+        .header-bar {
+            background: linear-gradient(to right, #111, #222);
+            color: #00ff41;
+            padding: 10px;
+            text-align: center;
+            border-radius: 4px;
+            border: 2px solid #ff003c;
+            margin-bottom: 10px;
+            box-shadow: inset 0 0 10px #ff003c;
+        }
+        .header-bar p { margin: 0; font-size: 12px; opacity: 0.8; color: #aaa; }
+
+        .input-section { 
+            background: #111; 
+            padding: 10px; 
+            border-radius: 5px; 
+            margin-bottom: 10px; 
+            border: 2px solid #00ff41;
+            box-shadow: inset 0 0 10px #00ff41;
+        }
+        .row { 
+            display: flex; 
+            gap: 8px; 
+            flex-wrap: wrap; 
+            margin-bottom: 8px; 
+        }
+        .col { 
+            flex: 1; 
+            min-width: 120px; 
+        }
+        label { 
+            font-size: 11px; 
+            font-weight: bold; 
+            color: #00ff41;
+        }
+        input, select { 
+            width: 100%; 
+            padding: 8px; 
+            margin-top: 2px; 
+            background: #000;
+            color: #00ff41;
+            border: 2px solid #00ff41; 
+            border-radius: 3px; 
+            font-size: 12px;
+            font-family: 'Courier New', monospace;
+            box-shadow: 0 0 5px #00ff41;
+        }
+        input:focus, select:focus {
+            outline: none;
+            box-shadow: 0 0 10px #ff003c;
+            border-color: #ff003c;
+        }
+        button { 
+            padding: 8px 12px; 
+            background: #111; 
+            color: #00ff41; 
+            border: 2px solid #00ff41;
+            border-radius: 3px; 
+            cursor: pointer; 
+            margin-right: 3px;
+            margin-bottom: 5px;
+            font-weight: bold;
+            font-size: 11px;
+            font-family: 'Courier New', monospace;
+            box-shadow: 0 0 8px #00ff41;
+            transition: all 0.2s;
+        }
+        button:hover {
+            background: #00ff41;
+            color: #000;
+        }
+        .btn-green { background: #000; border-color: #00ff41; color: #00ff41; }
+        .btn-red { background: #000; border-color: #ff003c; color: #ff003c; box-shadow: 0 0 8px #ff003c; }
+        .btn-red:hover { background: #ff003c; color: #000; }
+        .btn-blue { background: #000; border-color: #0088ff; color: #0088ff; }
+        .btn-orange { background: #000; border-color: #ff9900; color: #ff9900; }
+        .btn-purple { background: #000; border-color: #ff00ff; color: #ff00ff; }
+
+        table { 
+            width: 100%; 
+            border-collapse: collapse; 
+            margin-top: 10px; 
+            font-size: 9px; 
+            border: 2px solid #00ff41;
+            box-shadow: 0 0 10px rgba(0,255,65,0.3);
+        }
+        th, td { 
+            border: 1px solid #00ff41; 
+            padding: 4px 2px; 
+            text-align: center; 
+        }
+        th { 
+            background: #000; 
+            color: #ff003c; 
+            font-weight: bold;
+            text-shadow: 0 0 5px #ff003c;
+        }
+        
+        /* --- SUMMARY BOX --- */
+        .summary { 
+            background: #000; 
+            padding: 12px; 
+            margin-top: 12px; 
+            border-radius: 5px; 
+            border: 2px solid #00ff41;
+            box-shadow: inset 0 0 10px #00ff41;
+        }
+        .total { 
+            font-weight: bold; 
+            margin: 5px 0; 
+            font-size: 12px;
+            color: #00ff41;
+        }
+        .balance { 
+            font-size: 18px; 
+            color: #ff003c; 
+            font-weight: bold; 
+            text-align: center;
+            background: #000;
+            padding: 10px;
+            border-radius: 4px;
+            border: 2px solid #ff003c;
+            margin-top: 8px;
+            text-shadow: 0 0 10px #ff003c;
+            box-shadow: inset 0 0 10px #ff003c;
+        }
+
+        /* --- CHART CONTAINER --- */
+        .chart-container {
+            position: relative;
+            margin: auto;
+            height: 200px;
+            width: 100%;
+            background: #000;
+            padding: 10px;
+            border-radius: 5px;
+            border: 2px solid #00ff41;
+            margin-top: 10px;
+            box-shadow: inset 0 0 10px #00ff41;
+        }
+
+        /* --- FILTER BUTTONS --- */
+        .filter-buttons {
+            text-align: center;
+            margin: 10px 0;
+        }
+        .filter-btn {
+            padding: 5px 10px;
+            font-size: 10px;
+        }
+        .filter-btn.active {
+            background: #ff003c;
+            color: #000;
+            border-color: #ff003c;
+            box-shadow: 0 0 10px #ff003c;
+        }
+
+        /* --- HISTORY PAGE --- */
+        #historyPage { display: none; }
+        .history-controls { 
+            background: #111; 
+            padding: 10px; 
+            border-radius: 6px; 
+            margin-bottom: 8px;
+            border: 1px solid #00ff41;
+        }
+        .history-item { 
+            background: #0a0a0a; 
+            border: 2px solid #00ff41; 
+            padding: 10px; 
+            margin: 8px 0; 
+            border-radius: 6px; 
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .history-item:hover { 
+            background: #111; 
+            border-color: #ff003c;
+            box-shadow: 0 0 10px #ff003c;
+        }
+
+        .income { color: #00ff41; font-weight: bold; text-shadow: 0 0 5px #00ff41; }
+        .expense { color: #ff003c; font-weight: bold; text-shadow: 0 0 5px #ff003c; }
+
+        @media (max-width: 480px) {
+            .col { min-width: 110px; }
+            table { font-size: 8px; }
+            th, td { padding: 3px 1px; }
+            button { padding: 6px 8px; font-size: 10px; }
+            .chart-container { height: 180px; }
+        }
+
+        /* SCROLL */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #000;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #00ff41;
+            box-shadow: 0 0 10px #00ff41;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div class="header-bar">
+        <h1>💀 FINANCIAL INTERFACE v3.0 📊</h1>
+        <p>DATA ANALYSIS • FLOW MONITORING • SYSTEM SECURE</p>
+    </div>
+
+    <button onclick="showPage('main')" class="btn-blue">📝 MAIN TERMINAL</button>
+    <button onclick="showPage('history')" class="btn-orange">📜 ARCHIVE LOGS</button>
+    <button onclick="toggleChart()" class="btn-purple">📊 GRAPHICS</button>
+    <hr style="border: 1px solid #ff003c; margin: 8px 0; box-shadow: 0 0 5px #ff003c;">
+
+    <!-- ============================================== -->
+    <!-- ================= MAIN PAGE ================== -->
+    <!-- ============================================== -->
+    <div id="mainPage">
+
+        <!-- INPUT FORM -->
+        <div class="input-section">
+            <h3>📝 INPUT TRANSACTION</h3>
+            <div class="row">
+                <div class="col">
+                    <label>DATE STAMP:</label>
+                    <input type="date" id="transDate">
+                </div>
+                <div class="col">
+                    <label>TYPE:</label>
+                    <select id="transType">
+                        <option value="income">INJECTION (+)</option>
+                        <option value="expense">EXPENDITURE (-)</option>
+                    </select>
+                </div>
+                <div class="col">
+                    <label>CATEGORY:</label>
+                    <select id="transCategory">
+                        <option value="Salary">💵 SALARY</option>
+                        <option value="Business">🏪 BUSINESS</option>
+                        <option value="Food">🍔 FOOD</option>
+                        <option value="Transport">🚗 TRANSIT</option>
+                        <option value="Bills">📄 UTILITIES</option>
+                        <option value="Shopping">🛍️ SHOPPING</option>
+                        <option value="Entertainment">🎮 LEISURE</option>
+                        <option value="Health">🏥 MEDICAL</option>
+                        <option value="Others">📦 MISC</option>
+                    </select>
+                </div>
+            </div>
+            
+            <div class="row">
+                <div class="col">
+                    <label>DESCRIPTION:</label>
+                    <input type="text" id="transDesc" placeholder="Enter log details">
+                </div>
+                <div class="col">
+                    <label>AMOUNT (₱):</label>
+                    <input type="number" id="transAmount" placeholder="0.00" step="0.01">
+                </div>
+            </div>
+
+            <button onclick="addTransaction()" class="btn-green">➕ UPLOAD DATA</button>
+            <button onclick="saveRecord()" class="btn-green">💾 SAVE TO DATABASE</button>
+            <button onclick="clearAll()" class="btn-red">🗑️ WIPE SYSTEM</button>
+        </div>
+
+        <!-- FILTERS -->
+        <div class="filter-buttons">
+            <button class="filter-btn active" onclick="filterTransactions('all')">ALL</button>
+            <button class="filter-btn" onclick="filterTransactions('today')">TODAY</button>
+            <button class="filter-btn" onclick="filterTransactions('week')">WEEK</button>
+            <button class="filter-btn" onclick="filterTransactions('month')">MONTH</button>
+        </div>
+
+        <table id="transTable">
+            <thead>
+                <tr>
+                    <th>DATE</th>
+                    <th>TYPE</th>
+                    <th>CAT</th>
+                    <th>DESC</th>
+                    <th>AMOUNT</th>
+                </tr>
+            </thead>
+            <tbody id="tableBody">
+            </tbody>
+        </table>
+
+        <div class="summary">
+            <h2 style="text-align:center;">📊 SYSTEM ANALYTICS</h2>
+            <hr style="border:1px solid #ff003c; margin:5px 0;">
+            <div class="row">
+                <div class="col">
+                    <p class="total">🟢 INFLOW: ₱ <span id="totalIncome">0.00</span></p>
+                    <p class="total">🔴 OUTFLOW: ₱ <span id="totalExpense">0.00</span></p>
+                </div>
+            </div>
+            <p class="balance">💰 CURRENT BALANCE: ₱ <span id="currentBalance">0.00</span></p>
+        </div>
+
+        <!-- CHART AREA (Hidden by default) -->
+        <div id="chartArea" class="chart-container" style="display:none;">
+            <canvas id="myChart"></canvas>
+        </div>
+
+    </div> <!-- END MAIN PAGE -->
+    <!-- ============================================== -->
+    <!-- ================ HISTORY PAGE =============== -->
+    <!-- ============================================== -->
+    <div id="historyPage">
+        <h2>📜 TRANSACTION ARCHIVES</h2>
+        
+        <div class="history-controls">
+            <div class="row">
+                <div class="col" style="min-width: 200px;">
+                    <label>🔍 SCAN DATABASE:</label>
+                    <input type="text" id="searchInput" oninput="searchHistory()" placeholder="Search logs...">
+                </div>
+            </div>
+        </div>
+
+        <div id="historyList">
+            <!-- Dito lalabas ang history -->
+        </div>
+    </div>
+
+</div>
+
+<script>
+let transactions = [];
+let history = JSON.parse(localStorage.getItem("expenseHistory")) || [];
+let myChart;
+
+// Set today's date
+window.onload = function() {
+    let today = new Date().toISOString().split('T')[0];
+    document.getElementById("transDate").value = today;
+    loadHistory();
+};
+
+function addTransaction() {
+    let date = document.getElementById("transDate").value;
+    let type = document.getElementById("transType").value;
+    let category = document.getElementById("transCategory").value;
+    let desc = document.getElementById("transDesc").value;
+    let amount = parseFloat(document.getElementById("transAmount").value);
+
+    if(!date || !amount) {
+        alert("⚠️ INCOMPLETE DATA! CHECK FIELDS.");
+        return;
+    }
+
+    let data = {
+        date: date,
+        type: type,
+        category: category,
+        desc: desc,
+        amount: amount.toFixed(2)
+    };
+
+    transactions.push(data);
+    updateTable();
+    updateSummary();
+    
+    // Clear inputs
+    document.getElementById("transDesc").value = "";
+    document.getElementById("transAmount").value = "";
+}
+
+function updateTable(dataList = transactions) {
+    let table = document.getElementById("tableBody");
+    table.innerHTML = "";
+    
+    dataList.forEach(item => {
+        let row = table.insertRow();
+        let amountClass = item.type == 'income' ? 'income' : 'expense';
+        let sign = item.type == 'income' ? '+' : '-';
+        
+        row.innerHTML = `
+            <td>${item.date}</td>
+            <td>${item.type.toUpperCase()}</td>
+            <td>${item.category}</td>
+            <td>${item.desc}</td>
+            <td class="${amountClass}">${sign} ₱${item.amount}</td>
+        `;
+    });
+}
+
+function updateSummary() {
+    let income = 0;
+    let expense = 0;
+    
+    transactions.forEach(item => {
+        if(item.type == 'income') income += parseFloat(item.amount);
+        else expense += parseFloat(item.amount);
+    });
+    
+    let balance = income - expense;
+    
+    document.getElementById("totalIncome").innerText = income.toFixed(2);
+    document.getElementById("totalExpense").innerText = expense.toFixed(2);
+    document.getElementById("currentBalance").innerText = balance.toFixed(2);
+}
+
+// --- FILTER FUNCTIONS ---
+function filterTransactions(filter) {
+    // Remove active class
+    document.querySelectorAll('.filter-btn').forEach(btn => {
+        btn.classList.remove('active');
+    });
+    event.target.classList.add('active');
+
+    let filtered = [...transactions];
+    let today = new Date();
+    today.setHours(0,0,0,0);
+
+    if(filter == 'today') {
+        filtered = transactions.filter(item => new Date(item.date) >= today);
+    } 
+    else if(filter == 'week') {
+        let weekAgo = new Date(today.getTime() - 7 * 24 * 60 * 60 * 1000);
+        filtered = transactions.filter(item => new Date(item.date) >= weekAgo);
+    }
+    else if(filter == 'month') {
+        filtered = transactions.filter(item => {
+            let d = new Date(item.date);
+            return d.getMonth() == today.getMonth() && d.getFullYear() == today.getFullYear();
+        });
+    }
+
+    updateTable(filtered);
+}
+
+// --- CHART FUNCTION ---
+function toggleChart() {
+    let area = document.getElementById("chartArea");
+    if(area.style.display === "none" || area.style.display === "") {
+        area.style.display = "block";
+        generateChart();
+    } else {
+        area.style.display = "none";
+    }
+}
+
+function generateChart() {
+    let categories = {};
+    transactions.forEach(item => {
+        if(item.type == 'expense') {
+            if(!categories[item.category]) categories[item.category] = 0;
+            categories[item.category] += parseFloat(item.amount);
+        }
+    });
+
+    let labels = Object.keys(categories);
+    let values = Object.values(categories);
+
+    let ctx = document.getElementById('myChart').getContext('2d');
+    
+    // Destroy old chart if exists
+    if(myChart) myChart.destroy();
+
+    myChart = new Chart(ctx, {
+        type: 'doughnut',
+        data: {
+            labels: labels,
+            datasets: [{
+                data: values,
+                backgroundColor: [
+                    '#ff003c', '#00ff41', '#ffff00', '#0088ff', 
+                    '#ff00ff', '#ff9900', '#00ffff', '#999999'
+                ],
+                borderWidth: 1,
+                borderColor: '#000'
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: {
+                    position: 'bottom',
+                    labels: {
+                        font: { size: 10, family: 'Courier New' },
+                        color: '#00ff41'
+                    }
+                }
+            }
+        }
+    });
+}
+
+// --- SAVE TO HISTORY ---
+function saveRecord() {
+    if(transactions.length == 0) {
+        alert("⚠️ NO DATA TO UPLOAD!");
+        return;
+    }
+
+    let saveData = {
+        id: Date.now(),
+        date: new Date().toLocaleDateString(),
+        records: [...transactions],
+        finalBalance: document.getElementById("currentBalance").innerText
+    };
+
+    history.push(saveData);
+    localStorage.setItem("expenseHistory", JSON.stringify(history));
+    alert("✅ DATA STORED SUCCESSFULLY.");
+    loadHistory();
+}
+
+// --- HISTORY FUNCTIONS ---
+function showPage(page) {
+    if(page == 'main') {
+        document.getElementById('mainPage').style.display = 'block';
+        document.getElementById('historyPage').style.display = 'none';
+    } else {
+        document.getElementById('mainPage').style.display = 'none';
+        document.getElementById('historyPage').style.display = 'block';
+        loadHistory();
+    }
+}
+
+function loadHistory() {
+    let list = document.getElementById("historyList");
+    list.innerHTML = "";
+    if(history.length == 0) {
+        list.innerHTML = "<p style='text-align:center; color:gray; padding:15px;'>NO ARCHIVES FOUND.</p>";
+        return;
+    }
+
+    history.forEach((item, index) => {
+        let div = document.createElement("div");
+        div.className = "history-item";
+        div.innerHTML = `
+            <h3>📅 LOG DATE: ${item.date}</h3>
+            <p><strong>💰 BALANCE: ₱${item.finalBalance}</strong></p>
+            <button onclick="viewHistory(${index})" class="btn-green">ACCESS</button>
+            <button onclick="deleteHistory(${index})" class="btn-red">ERASE</button>
+        `;
+        list.appendChild(div);
+    });
+}
+
+function searchHistory() {
+    let search = document.getElementById("searchInput").value.toLowerCase();
+    let items = document.querySelectorAll(".history-item");
+    
+    items.forEach((div, index) => {
+        let text = div.innerText.toLowerCase();
+        if(text.includes(search)) div.style.display = "block";
+        else div.style.display = "none";
+    });
+}
+
+function viewHistory(index) {
+    let data = history[index];
+    transactions = data.records;
+    updateTable();
+    updateSummary();
+    showPage('main');
+}
+
+function deleteHistory(index) {
+    if(confirm("⚠️ CONFIRM DATA DELETION?")) {
+        history.splice(index, 1);
+        localStorage.setItem("expenseHistory", JSON.stringify(history));
+        loadHistory();
+    }
+}
+
+function clearAll() {
+    if(confirm("⚠️ WIPE ALL CURRENT DATA?")) {
+        document.getElementById("tableBody").innerHTML = "";
+        transactions = [];
+        updateSummary();
+    }
+}
+</script>
+
+</body>
+</html>
